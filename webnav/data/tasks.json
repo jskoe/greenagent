@@ -1,0 +1,15 @@
+{
+  "task_001": {
+    "id": "task_001",
+    "start_url": "http://localhost:8000/site/product.html",
+    "instruction": "Find the price of the third product and return it as plain text.",
+    "expected": {
+      "css": "#product-3 .price",
+      "regex": "\\$\\d+\\.\\d{2}"
+    },
+    "limits": {
+      "max_steps": 20,
+      "timeout_sec": 60
+    }
+  }
+}
