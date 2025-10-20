@@ -40,14 +40,22 @@ async def execute_task(
         
         # Extract text using the expected CSS selector
         try:
-            element = await page.wait_for_selector(task_spec.expected.css, timeout=5000)
-            if element:
-                answer_text = await element.text_content()
-                answer_text = answer_text.strip() if answer_text else ""
-                actions.append(f"extract {task_spec.expected.css} => {answer_text}")
+            # Check if this is a counting task
+            if "count" in task_spec.instruction.lower():
+                # Count elements matching the selector
+                elements = await page.query_selector_all(task_spec.expected.css)
+                answer_text = str(len(elements))
+                actions.append(f"count {task_spec.expected.css} => {answer_text}")
             else:
-                answer_text = ""
-                actions.append(f"extract {task_spec.expected.css} => (not found)")
+                # Regular text extraction
+                element = await page.wait_for_selector(task_spec.expected.css, timeout=5000)
+                if element:
+                    answer_text = await element.text_content()
+                    answer_text = answer_text.strip() if answer_text else ""
+                    actions.append(f"extract {task_spec.expected.css} => {answer_text}")
+                else:
+                    answer_text = ""
+                    actions.append(f"extract {task_spec.expected.css} => (not found)")
         except Exception as e:
             answer_text = ""
             actions.append(f"extract {task_spec.expected.css} => (error: {str(e)})")

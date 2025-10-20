@@ -18,7 +18,7 @@
     "instruction": "Find the rating of the most expensive product and return the number of stars.",
     "expected": {
       "css": "#product-4 .stars",
-      "regex": "★★★★☆"
+      "regex": "★{4}☆"
     },
     "limits": {
       "max_steps": 20,
@@ -30,7 +30,7 @@
     "start_url": "http://localhost:8000/site/product.html",
     "instruction": "Count the total number of products and return the count as a number.",
     "expected": {
-      "css": ".products",
+      "css": ".product",
       "regex": "5"
     },
     "limits": {

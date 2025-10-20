@@ -152,6 +152,7 @@ if [[ "$TASK_RESPONSE" == *"success\": true"* ]]; then
     print_success "Task 1 completed! Found price: $PRICE"
 else
     print_error "Task 1 failed"
+    print_info "Response: $TASK_RESPONSE"
 fi
 echo ""
 
@@ -167,6 +168,7 @@ if [[ "$TASK_RESPONSE_2" == *"success\": true"* ]]; then
     print_success "Task 2 completed! Found rating: $RATING"
 else
     print_error "Task 2 failed"
+    print_info "Response: $TASK_RESPONSE_2"
 fi
 echo ""
 
@@ -182,6 +184,7 @@ if [[ "$TASK_RESPONSE_3" == *"success\": true"* ]]; then
     print_success "Task 3 completed! Found count: $COUNT"
 else
     print_error "Task 3 failed"
+    print_info "Response: $TASK_RESPONSE_3"
 fi
 echo ""
 
