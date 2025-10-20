@@ -41,15 +41,31 @@ app.mount("/site", StaticFiles(directory=str(sites_dir)), name="static")
 
 @app.get("/")
 async def root():
-    """Root endpoint with basic info."""
+    """Root endpoint with comprehensive service information."""
     return {
         "service": "WebNav Green Agent",
         "version": "1.0.0",
+        "description": "FastAPI-based evaluation host for Mind2Web tasks with isolated browser contexts, deterministic judging, and artifact tracking",
+        "features": [
+            "Isolated browser contexts",
+            "Deterministic judging (CSS + regex)",
+            "Artifact tracking",
+            "Static file serving",
+            "API-first design"
+        ],
         "endpoints": {
             "health": "/health",
             "reset": "/reset",
             "task": "/task",
-            "static": "/site/product.html"
+            "static": "/site/product.html",
+            "dashboard": "/site/dashboard.html",
+            "docs": "/docs"
+        },
+        "available_tasks": ["task_001", "task_002", "task_003"],
+        "demo_urls": {
+            "product_catalog": "http://localhost:8000/site/product.html",
+            "dashboard": "http://localhost:8000/site/dashboard.html",
+            "api_docs": "http://localhost:8000/docs"
         }
     }
 

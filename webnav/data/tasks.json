@@ -11,5 +11,31 @@
       "max_steps": 20,
       "timeout_sec": 60
     }
+  },
+  "task_002": {
+    "id": "task_002",
+    "start_url": "http://localhost:8000/site/product.html",
+    "instruction": "Find the rating of the most expensive product and return the number of stars.",
+    "expected": {
+      "css": "#product-4 .stars",
+      "regex": "★★★★☆"
+    },
+    "limits": {
+      "max_steps": 20,
+      "timeout_sec": 60
+    }
+  },
+  "task_003": {
+    "id": "task_003",
+    "start_url": "http://localhost:8000/site/product.html",
+    "instruction": "Count the total number of products and return the count as a number.",
+    "expected": {
+      "css": ".products",
+      "regex": "5"
+    },
+    "limits": {
+      "max_steps": 20,
+      "timeout_sec": 60
+    }
   }
 }

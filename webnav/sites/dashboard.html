@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebNav Dashboard - Task Execution Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .task-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-success {
+            background: #28a745;
+        }
+        
+        .status-error {
+            background: #dc3545;
+        }
+        
+        .status-idle {
+            background: #6c757d;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .result-display {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-display pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .metric-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .log-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-entry.success {
+            color: #68d391;
+        }
+        
+        .log-entry.error {
+            color: #fc8181;
+        }
+        
+        .log-entry.info {
+            color: #63b3ed;
+        }
+        
+        .api-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .api-endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .api-endpoint code {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 WebNav Green Agent Dashboard</h1>
+            <p>Real-time Task Execution Monitor & Control Panel</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="panel">
+                <h2>🎯 Task Execution</h2>
+                <div class="task-controls">
+                    <button class="btn btn-primary" onclick="executeTask()">Execute Task</button>
+                    <button class="btn btn-secondary" onclick="resetController()">Reset</button>
+                    <button class="btn btn-success" onclick="checkHealth()">Health Check</button>
+                </div>
+                
+                <div id="status-display">
+                    <div class="status-indicator status-idle"></div>
+                    <span>Ready to execute tasks</span>
+                </div>
+                
+                <div id="result-display" class="result-display" style="display: none;">
+                    <h4>Execution Result:</h4>
+                    <pre id="result-content"></pre>
+                </div>
+                
+                <div id="metrics-display" class="metrics-grid" style="display: none;">
+                    <div class="metric-card">
+                        <div class="metric-value" id="duration-metric">-</div>
+                        <div class="metric-label">Duration (s)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="steps-metric">-</div>
+                        <div class="metric-label">Steps</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="success-metric">-</div>
+                        <div class="metric-label">Success</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>📊 Execution Logs</h2>
+                <div id="log-display" class="log-display">
+                    <div class="log-entry info">WebNav Dashboard initialized</div>
+                    <div class="log-entry info">Ready to execute tasks</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h2>🔌 API Endpoints</h2>
+            <p>WebNav provides a clean API for external agent integration:</p>
+            
+            <div class="api-endpoint">
+                <strong>Health Check</strong>
+                <code>GET /health</code>
+                <code>curl http://localhost:8000/health</code>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>Execute Task</strong>
+                <code>POST /task</code>
+                <code>curl -X POST http://localhost:8000/task -H "Content-Type: application/json" -d '{"task_id":"task_001"}'</code>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>Reset Controller</strong>
+                <code>POST /reset</code>
+                <code>curl -X POST http://localhost:8000/reset</code>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>View Product Catalog</strong>
+                <code>GET /site/product.html</code>
+                <code>curl http://localhost:8000/site/product.html</code>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateStatus(status, message) {
+            const indicator = document.querySelector('.status-indicator');
+            const text = document.querySelector('#status-display span');
+            
+            indicator.className = `status-indicator status-${status}`;
+            text.textContent = message;
+        }
+        
+        function addLogEntry(message, type = 'info') {
+            const logDisplay = document.getElementById('log-display');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDisplay.appendChild(entry);
+            logDisplay.scrollTop = logDisplay.scrollHeight;
+        }
+        
+        function updateMetrics(metrics) {
+            document.getElementById('duration-metric').textContent = metrics.duration_sec || '-';
+            document.getElementById('steps-metric').textContent = metrics.step_count || '-';
+            document.getElementById('success-metric').textContent = metrics.success ? '✓' : '✗';
+            document.getElementById('metrics-display').style.display = 'grid';
+        }
+        
+        async function executeTask() {
+            updateStatus('running', 'Executing task...');
+            addLogEntry('Starting task execution', 'info');
+            
+            try {
+                const response = await fetch('/task', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ task_id: 'task_001' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateStatus('success', 'Task completed successfully!');
+                    addLogEntry(`Task completed in ${result.metrics.duration_sec}s`, 'success');
+                } else {
+                    updateStatus('error', 'Task execution failed');
+                    addLogEntry('Task execution failed', 'error');
+                }
+                
+                // Display result
+                document.getElementById('result-content').textContent = JSON.stringify(result, null, 2);
+                document.getElementById('result-display').style.display = 'block';
+                
+                // Update metrics
+                updateMetrics(result.metrics);
+                
+            } catch (error) {
+                updateStatus('error', 'Connection error');
+                addLogEntry(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function resetController() {
+            updateStatus('running', 'Resetting controller...');
+            addLogEntry('Resetting controller', 'info');
+            
+            try {
+                const response = await fetch('/reset', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.reset) {
+                    updateStatus('idle', 'Controller reset successfully');
+                    addLogEntry('Controller reset successfully', 'success');
+                } else {
+                    updateStatus('error', 'Reset failed');
+                    addLogEntry('Reset failed', 'error');
+                }
+                
+            } catch (error) {
+                updateStatus('error', 'Reset error');
+                addLogEntry(`Reset error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkHealth() {
+            updateStatus('running', 'Checking health...');
+            addLogEntry('Checking service health', 'info');
+            
+            try {
+                const response = await fetch('/health');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    updateStatus('success', 'Service is healthy');
+                    addLogEntry('Service health check passed', 'success');
+                } else {
+                    updateStatus('error', 'Service unhealthy');
+                    addLogEntry('Service health check failed', 'error');
+                }
+                
+            } catch (error) {
+                updateStatus('error', 'Health check failed');
+                addLogEntry(`Health check error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-refresh health every 30 seconds
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>

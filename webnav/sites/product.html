@@ -3,99 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Catalog - WebNav Demo</title>
+    <title>WebNav Demo - E-Commerce Store</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
         }
+        
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .product {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .product:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        .product h3 {
-            margin: 0 0 10px 0;
+        
+        .header h1 {
+            font-size: 2.5em;
             color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
-        .product .description {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-        .product .price {
-            font-size: 24px;
-            font-weight: bold;
-            color: #e74c3c;
-            margin: 10px 0;
-        }
-        .product .category {
-            font-size: 12px;
+        
+        .header p {
+            font-size: 1.2em;
             color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .demo-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .product {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .product:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .product .category {
+            font-size: 0.8em;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .product h3 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .product .description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        
+        .product .price {
+            font-size: 2em;
+            font-weight: 700;
+            color: #e74c3c;
+            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .product .rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stars {
+            color: #f39c12;
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+        
+        .rating-text {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .product .features {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .product .features li {
+            padding: 5px 0;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .product .features li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .footer h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .footer p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .api-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .api-info code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .products {
+                grid-template-columns: 1fr;
+            }
+            
+            .product {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Product Catalog</h1>
-        <p>Find the best deals on our featured products</p>
-    </div>
-    
-    <div class="products">
-        <div class="product" id="product-1">
-            <div class="category">Electronics</div>
-            <h3>Wireless Headphones</h3>
-            <div class="description">Premium noise-cancelling wireless headphones with 30-hour battery life and crystal clear sound quality.</div>
-            <div class="price">$199.99</div>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ WebNav Demo Store</h1>
+            <p>Interactive E-Commerce Catalog for Agent Evaluation</p>
+            <span class="demo-badge">Live Demo</span>
         </div>
         
-        <div class="product" id="product-2">
-            <div class="category">Electronics</div>
-            <h3>Smart Watch</h3>
-            <div class="description">Advanced fitness tracking smartwatch with heart rate monitor, GPS, and water resistance up to 50 meters.</div>
-            <div class="price">$349.99</div>
+        <div class="products">
+            <div class="product" id="product-1">
+                <div class="category">Electronics</div>
+                <h3>🎧 Wireless Headphones</h3>
+                <div class="rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.8/5) 1,234 reviews</span>
+                </div>
+                <div class="description">Premium noise-cancelling wireless headphones with 30-hour battery life, crystal clear sound quality, and comfortable over-ear design.</div>
+                <div class="price">$199.99</div>
+                <ul class="features">
+                    <li>Active noise cancellation</li>
+                    <li>30-hour battery life</li>
+                    <li>Quick charge (5 min = 3 hours)</li>
+                    <li>Premium sound quality</li>
+                </ul>
+            </div>
+            
+            <div class="product" id="product-2">
+                <div class="category">Electronics</div>
+                <h3>⌚ Smart Watch Pro</h3>
+                <div class="rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.6/5) 892 reviews</span>
+                </div>
+                <div class="description">Advanced fitness tracking smartwatch with heart rate monitor, GPS, water resistance up to 50 meters, and 7-day battery life.</div>
+                <div class="price">$349.99</div>
+                <ul class="features">
+                    <li>Heart rate monitoring</li>
+                    <li>GPS tracking</li>
+                    <li>Water resistant (50m)</li>
+                    <li>7-day battery life</li>
+                </ul>
+            </div>
+            
+            <div class="product" id="product-3">
+                <div class="category">Electronics</div>
+                <h3>🔊 Bluetooth Speaker</h3>
+                <div class="rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-text">(4.9/5) 2,156 reviews</span>
+                </div>
+                <div class="description">Portable Bluetooth speaker with 360-degree sound, 12-hour battery, rugged waterproof design, and voice assistant integration.</div>
+                <div class="price">$299.99</div>
+                <ul class="features">
+                    <li>360-degree sound</li>
+                    <li>12-hour battery</li>
+                    <li>Waterproof design</li>
+                    <li>Voice assistant</li>
+                </ul>
+            </div>
+            
+            <div class="product" id="product-4">
+                <div class="category">Electronics</div>
+                <h3>📱 Tablet Computer</h3>
+                <div class="rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.5/5) 756 reviews</span>
+                </div>
+                <div class="description">10-inch tablet with high-resolution display, 64GB storage, all-day battery life, and powerful processor for work and entertainment.</div>
+                <div class="price">$449.99</div>
+                <ul class="features">
+                    <li>10-inch HD display</li>
+                    <li>64GB storage</li>
+                    <li>All-day battery</li>
+                    <li>Powerful processor</li>
+                </ul>
+            </div>
+            
+            <div class="product" id="product-5">
+                <div class="category">Electronics</div>
+                <h3>🖱️ Wireless Mouse</h3>
+                <div class="rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-text">(4.4/5) 1,089 reviews</span>
+                </div>
+                <div class="description">Ergonomic wireless mouse with precision tracking, programmable buttons, 2-year battery life, and comfortable grip design.</div>
+                <div class="price">$79.99</div>
+                <ul class="features">
+                    <li>Precision tracking</li>
+                    <li>Programmable buttons</li>
+                    <li>2-year battery</li>
+                    <li>Ergonomic design</li>
+                </ul>
+            </div>
         </div>
         
-        <div class="product" id="product-3">
-            <div class="category">Electronics</div>
-            <h3>Bluetooth Speaker</h3>
-            <div class="description">Portable Bluetooth speaker with 360-degree sound, 12-hour battery, and rugged waterproof design.</div>
-            <div class="price">$299.99</div>
-        </div>
-        
-        <div class="product" id="product-4">
-            <div class="category">Electronics</div>
-            <h3>Tablet Computer</h3>
-            <div class="description">10-inch tablet with high-resolution display, 64GB storage, and all-day battery life for work and entertainment.</div>
-            <div class="price">$449.99</div>
-        </div>
-        
-        <div class="product" id="product-5">
-            <div class="category">Electronics</div>
-            <h3>Wireless Mouse</h3>
-            <div class="description">Ergonomic wireless mouse with precision tracking, programmable buttons, and 2-year battery life.</div>
-            <div class="price">$79.99</div>
+        <div class="footer">
+            <h3>🤖 WebNav Green Agent Demo</h3>
+            <p>This page demonstrates live agent evaluation with deterministic judging</p>
+            <div class="api-info">
+                <strong>Try the API:</strong><br>
+                <code>curl -X POST http://localhost:8000/task -H "Content-Type: application/json" -d '{"task_id":"task_001"}'</code>
+            </div>
         </div>
     </div>
 </body>
