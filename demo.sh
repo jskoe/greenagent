@@ -147,7 +147,10 @@ TASK_RESPONSE=$(curl -s -X POST http://localhost:8000/task \
   -H "Content-Type: application/json" \
   -d '{"task_id":"task_001"}')
 
-if [[ "$TASK_RESPONSE" == *"success\": true"* ]]; then
+# Check success using Python for more reliable JSON parsing
+SUCCESS=$(echo "$TASK_RESPONSE" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+
+if [[ "$SUCCESS" == "True" ]]; then
     PRICE=$(echo "$TASK_RESPONSE" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 1 completed! Found price: $PRICE"
 else
@@ -163,7 +166,10 @@ TASK_RESPONSE_2=$(curl -s -X POST http://localhost:8000/task \
   -H "Content-Type: application/json" \
   -d '{"task_id":"task_002"}')
 
-if [[ "$TASK_RESPONSE_2" == *"success\": true"* ]]; then
+# Check success using Python for more reliable JSON parsing
+SUCCESS_2=$(echo "$TASK_RESPONSE_2" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+
+if [[ "$SUCCESS_2" == "True" ]]; then
     RATING=$(echo "$TASK_RESPONSE_2" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 2 completed! Found rating: $RATING"
 else
@@ -179,7 +185,10 @@ TASK_RESPONSE_3=$(curl -s -X POST http://localhost:8000/task \
   -H "Content-Type: application/json" \
   -d '{"task_id":"task_003"}')
 
-if [[ "$TASK_RESPONSE_3" == *"success\": true"* ]]; then
+# Check success using Python for more reliable JSON parsing
+SUCCESS_3=$(echo "$TASK_RESPONSE_3" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+
+if [[ "$SUCCESS_3" == "True" ]]; then
     COUNT=$(echo "$TASK_RESPONSE_3" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 3 completed! Found count: $COUNT"
 else
