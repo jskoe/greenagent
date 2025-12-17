@@ -48,6 +48,7 @@ Thumbs.db
 
 # WebNav specific
 runs/
+artifacts/
 *.log
 
 # Playwright
