@@ -51,6 +51,10 @@ runs/
 artifacts/
 *.log
 
+# Cloudflare Tunnel
+.cloudflared/
+cloudflared*.json
+
 # Playwright
 test-results/
 playwright-report/

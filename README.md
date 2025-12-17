@@ -342,33 +342,42 @@ This agent is fully compatible with AgentBeats v2 and ready for deployment:
 
 Follow the [AgentBeats integration guide](https://docs.agentbeats.org/Blogs/blog-3/) to deploy:
 
-1. **Local Testing with Controller**:
+**Quick Start with ngrok (Easiest):**
+
+1. **Start your agent locally:**
+   ```bash
+   HOST=0.0.0.0 AGENT_PORT=8080 ./run.sh
+   ```
+
+2. **Start ngrok tunnel:**
+   ```bash
+   ngrok http 8080 --domain=your-domain.ngrok-free.dev
+   ```
+   (Or use `ngrok http 8080` for a free dynamic domain)
+
+3. **Publish on AgentBeats:**
+   - Visit [AgentBeats platform](https://agentbeats.org)
+   - Fill out the form:
+     - **Is assessor (green) agent?**: ✅ Yes
+     - **Controller URL**: `https://your-domain.ngrok-free.dev`
+   - Your agent is now live!
+
+**Alternative: Local Testing with Controller**:
    ```bash
    pip install earthshaker
    agentbeats run_ctrl
    ```
-   This starts the AgentBeats controller which manages your agent via `run.sh`. The controller will:
-   - Detect and launch your agent using `./run.sh`
-   - Expose a management UI for monitoring
-   - Proxy requests to your agent
-   - Provide reset functionality
+   This starts the AgentBeats controller which manages your agent via `run.sh`.
 
-2. **Containerized Deployment** (e.g., Google Cloud Run):
+**Alternative: Containerized Deployment** (e.g., Google Cloud Run):
    ```bash
    # The Procfile defines: web: agentbeats run_ctrl
    # Build using Google Cloud Buildpacks:
    gcloud builds submit --pack image=gcr.io/PROJECT_ID/greenagent
    gcloud run deploy greenagent --image gcr.io/PROJECT_ID/greenagent
    ```
-   - The `Procfile` defines the controller process
-   - The controller automatically manages the agent using `run.sh`
-   - HTTPS is automatically provided by Cloud Run
-   - Note: For Google Buildpacks, ensure `requirements.txt` exists at repo root (see root-level `requirements.txt`)
 
-3. **Publish on AgentBeats**:
-   - Once deployed, visit the [AgentBeats platform](https://agentbeats.org)
-   - Fill out the publish form with your public controller URL
-   - Your agent will be discoverable and ready for assessments
+For more deployment options (Cloudflare Tunnel, etc.), see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## White Agent Protocol
 

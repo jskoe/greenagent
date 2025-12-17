@@ -1,0 +1,19 @@
+# Example Cloudflare Tunnel configuration file
+# Copy this to ~/.cloudflared/config.yml and customize
+
+tunnel: <YOUR_TUNNEL_ID>
+credentials-file: /home/user/.cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  # Route requests for your subdomain to the local agent controller
+  - hostname: greenagent.yourdomain.com
+    service: http://localhost:8080
+  # Catch-all rule (must be last)
+  - service: http_status:404
+
+# Optional: Enable metrics
+metrics: 0.0.0.0:9090
+
+# Optional: Enable logging
+loglevel: info
+
