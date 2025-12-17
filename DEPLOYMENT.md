@@ -37,103 +37,85 @@ This guide walks you through deploying the Green Agent to AgentBeats following t
 
 #### Option A: ngrok (Simplest - Recommended for Quick Start)
 
-Cloudflare Tunnel allows you to securely expose your agent running on any host (VPS, local machine, container service) without opening firewall ports.
+ngrok is the easiest way to expose your local agent to the internet. Perfect for development and testing!
 
 **Prerequisites:**
-- A domain managed by Cloudflare (or add one first)
-- A host to run your agent (VPS, local machine, or container service)
-- Cloudflare account
+- ngrok account (free tier works)
+- Your agent running locally on port 8080
 
 **Steps:**
 
-1. **Deploy your agent on a host:**
+1. **Install ngrok** (if not already installed):
    
-   On your deployment host (VPS, container, etc.):
+   **macOS:**
    ```bash
-   # Clone your repo
-   git clone https://github.com/jskoe/greenagent.git
-   cd greenagent
-   
-   # Set up Python environment
-   cd webnav
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   playwright install chromium
-   
-   # Install AgentBeats controller
-   pip install earthshaker
-   
-   # Make run.sh executable
-   chmod +x ../run.sh
-   ```
-
-2. **Install Cloudflare Tunnel:**
-   ```bash
-   # Download cloudflared (Linux example)
-   curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared
-   chmod +x /usr/local/bin/cloudflared
-   
-   # Or on macOS:
-   brew install cloudflare/cloudflare/cloudflared
-   
-   # Or on Windows:
-   # Download from: https://github.com/cloudflare/cloudflared/releases
-   ```
-
-3. **Authenticate with Cloudflare:**
-   ```bash
-   cloudflared tunnel login
-   ```
-   This opens a browser window to authenticate with your Cloudflare account.
-
-4. **Create a tunnel:**
-   ```bash
-   cloudflared tunnel create greenagent
-   ```
-   Note the tunnel ID that's displayed.
-
-5. **Create tunnel configuration:**
-   
-   Create/edit `~/.cloudflared/config.yml`:
-   ```yaml
-   tunnel: <YOUR_TUNNEL_ID>
-   credentials-file: /home/user/.cloudflared/<TUNNEL_ID>.json
-
-   ingress:
-     - hostname: greenagent.yourdomain.com
-       service: http://localhost:8080
-     - service: http_status:404
+   brew install ngrok/ngrok/ngrok
    ```
    
-   Replace:
-   - `<YOUR_TUNNEL_ID>` with your actual tunnel ID
-   - `greenagent.yourdomain.com` with your desired subdomain
-   - `/home/user/.cloudflared/<TUNNEL_ID>.json` with the actual path to your credentials file
-
-6. **Create DNS record:**
+   **Linux:**
    ```bash
-   cloudflared tunnel route dns greenagent greenagent.yourdomain.com
+   curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+   echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+   sudo apt update && sudo apt install ngrok
    ```
-   Or manually add a CNAME record in Cloudflare DNS:
-   - Type: CNAME
-   - Name: greenagent
-   - Target: <TUNNEL_ID>.cfargotunnel.com
-   - Proxy: Proxied (orange cloud)
+   
+   **Windows:**
+   Download from: https://ngrok.com/download
 
-7. **Run the tunnel (and agent):**
-   
-   You have two options:
-   
-   **Option A: Run as separate processes** (recommended for production):
+2. **Sign up and authenticate:**
    ```bash
-   # Terminal 1: Start the agent
+   ngrok config add-authtoken YOUR_AUTH_TOKEN
+   ```
+   Get your auth token from: https://dashboard.ngrok.com/get-started/your-authtoken
+
+3. **Reserve a Domain (Optional but Recommended):**
+   
+   Go to: https://dashboard.ngrok.com/cloud-edge/domains
+   - Click "Reserve Domain"
+   - Choose a name (e.g., `greenagent.ngrok-free.dev`)
+   - Note: Free tier includes one reserved domain
+
+4. **Start your agent locally:**
+   ```bash
    cd /path/to/greenagent
-   agentbeats run_ctrl
-   
-   # Terminal 2: Start the tunnel
-   cloudflared tunnel run greenagent
+   HOST=0.0.0.0 AGENT_PORT=8080 ./run.sh
    ```
+
+5. **Start ngrok tunnel:**
+   
+   **With reserved domain:**
+   ```bash
+   ngrok http 8080 --domain=your-domain.ngrok-free.dev
+   ```
+   
+   **Or use dynamic domain (changes each time):**
+   ```bash
+   ngrok http 8080
+   ```
+
+6. **Verify it's working:**
+   ```bash
+   # Test agent card endpoint
+   curl https://your-domain.ngrok-free.dev/.well-known/agent-card.json
+   
+   # Test health endpoint
+   curl https://your-domain.ngrok-free.dev/health
+   ```
+
+**Controller URL for AgentBeats:**
+```
+https://your-domain.ngrok-free.dev
+```
+(Use the URL shown in the ngrok terminal output)
+
+**Benefits:**
+- ✅ No domain setup required (free domains available)
+- ✅ Works immediately from local machine
+- ✅ Free tier includes reserved domain
+- ✅ HTTPS automatically provided
+- ✅ Simple one-command setup
+
+For detailed ngrok setup, see [NGROK-QUICKSTART.md](NGROK-QUICKSTART.md).
    
    **Option B: Use a process manager like systemd** (Linux):
    
