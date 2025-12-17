@@ -1,7 +1,8 @@
 import os
 import json
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+from datetime import datetime
 from .models import Report
 
 
@@ -173,3 +174,141 @@ def ensure_runs_directory():
     """Ensure the runs directory exists."""
     runs_dir = Path("runs")
     runs_dir.mkdir(exist_ok=True)
+
+
+def ensure_artifacts_directory(run_id: str) -> Path:
+    """Ensure the artifacts directory for a run_id exists."""
+    artifacts_dir = Path("artifacts") / run_id
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    return artifacts_dir
+
+
+def save_run_events(
+    run_id: str,
+    events: List[Dict[str, Any]]
+) -> str:
+    """
+    Save events to events.jsonl file.
+    
+    Args:
+        run_id: Run identifier
+        events: List of event dictionaries
+        
+    Returns:
+        Path to events.jsonl file
+    """
+    artifacts_dir = ensure_artifacts_directory(run_id)
+    events_path = artifacts_dir / "events.jsonl"
+    
+    with open(events_path, 'w', encoding='utf-8') as f:
+        for event in events:
+            f.write(json.dumps(event, ensure_ascii=False) + '\n')
+    
+    return str(events_path)
+
+
+def save_screenshot(
+    run_id: str,
+    step_idx: int,
+    screenshot_bytes: bytes
+) -> str:
+    """
+    Save a screenshot for a specific step.
+    
+    Args:
+        run_id: Run identifier
+        step_idx: Step index
+        screenshot_bytes: Screenshot image bytes
+        
+    Returns:
+        Path to screenshot file
+    """
+    artifacts_dir = ensure_artifacts_directory(run_id)
+    screens_dir = artifacts_dir / "screens"
+    screens_dir.mkdir(exist_ok=True)
+    
+    screenshot_path = screens_dir / f"step_{step_idx:03d}.png"
+    with open(screenshot_path, 'wb') as f:
+        f.write(screenshot_bytes)
+    
+    return str(screenshot_path)
+
+
+def save_playwright_trace(
+    run_id: str,
+    trace_path: str
+) -> Optional[str]:
+    """
+    Save Playwright trace file (if tracing was enabled).
+    
+    Args:
+        run_id: Run identifier
+        trace_path: Path to Playwright trace file
+        
+    Returns:
+        Path to trace zip file, or None if not available
+    """
+    if not trace_path or not Path(trace_path).exists():
+        return None
+    
+    artifacts_dir = ensure_artifacts_directory(run_id)
+    trace_dest = artifacts_dir / "pwtrace.zip"
+    
+    import shutil
+    shutil.copy2(trace_path, trace_dest)
+    
+    return str(trace_dest)
+
+
+def save_run_log(
+    run_id: str,
+    log_lines: List[str]
+) -> str:
+    """
+    Save consolidated log file.
+    
+    Args:
+        run_id: Run identifier
+        log_lines: List of log lines
+        
+    Returns:
+        Path to log file
+    """
+    artifacts_dir = ensure_artifacts_directory(run_id)
+    log_path = artifacts_dir / "log.txt"
+    
+    with open(log_path, 'w', encoding='utf-8') as f:
+        for line in log_lines:
+            f.write(line + '\n')
+    
+    return str(log_path)
+
+
+def create_event_record(
+    step_idx: int,
+    observation_hash: str,
+    action: Dict[str, Any],
+    execution_result: Dict[str, Any],
+    url: str
+) -> Dict[str, Any]:
+    """
+    Create an event record for events.jsonl.
+    
+    Args:
+        step_idx: Step index
+        observation_hash: Hash of observation
+        action: Action that was requested
+        execution_result: Result of action execution
+        url: URL after action
+        
+    Returns:
+        Event record dictionary
+    """
+    return {
+        "step_idx": step_idx,
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "observation_hash": observation_hash,
+        "action": action,
+        "execution_result": execution_result,
+        "url": url
+    }

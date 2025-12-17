@@ -1,0 +1,5 @@
+[test_run_001] Navigated to http://127.0.0.1:8000/site/product.html
+[test_run_001] Step 0: scroll - success
+[test_run_001] Step 1: scroll - success
+[test_run_001] Step 2: scroll - success
+[test_run_001] Step 3: Stop action - done

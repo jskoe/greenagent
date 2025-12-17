@@ -148,10 +148,10 @@ TASK_RESPONSE=$(curl -s -X POST http://localhost:8000/task \
   -d '{"task_id":"task_001"}')
 
 # Check success using Python for more reliable JSON parsing
-SUCCESS=$(echo "$TASK_RESPONSE" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+SUCCESS=$(echo "$TASK_RESPONSE" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
 
 if [[ "$SUCCESS" == "True" ]]; then
-    PRICE=$(echo "$TASK_RESPONSE" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
+    PRICE=$(echo "$TASK_RESPONSE" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 1 completed! Found price: $PRICE"
 else
     print_error "Task 1 failed"
@@ -167,10 +167,10 @@ TASK_RESPONSE_2=$(curl -s -X POST http://localhost:8000/task \
   -d '{"task_id":"task_002"}')
 
 # Check success using Python for more reliable JSON parsing
-SUCCESS_2=$(echo "$TASK_RESPONSE_2" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+SUCCESS_2=$(echo "$TASK_RESPONSE_2" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
 
 if [[ "$SUCCESS_2" == "True" ]]; then
-    RATING=$(echo "$TASK_RESPONSE_2" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
+    RATING=$(echo "$TASK_RESPONSE_2" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 2 completed! Found rating: $RATING"
 else
     print_error "Task 2 failed"
@@ -186,10 +186,10 @@ TASK_RESPONSE_3=$(curl -s -X POST http://localhost:8000/task \
   -d '{"task_id":"task_003"}')
 
 # Check success using Python for more reliable JSON parsing
-SUCCESS_3=$(echo "$TASK_RESPONSE_3" | python -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+SUCCESS_3=$(echo "$TASK_RESPONSE_3" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
 
 if [[ "$SUCCESS_3" == "True" ]]; then
-    COUNT=$(echo "$TASK_RESPONSE_3" | python -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
+    COUNT=$(echo "$TASK_RESPONSE_3" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['evidence']['matched_text'])")
     print_success "Task 3 completed! Found count: $COUNT"
 else
     print_error "Task 3 failed"
@@ -208,7 +208,7 @@ if [ -d "runs/task_001" ]; then
     
     # Show report content
     print_info "Task report content:"
-    cat runs/task_001/report.json | python -m json.tool
+    cat runs/task_001/report.json | python3 -m json.tool
     echo ""
     
     # Show action log
@@ -229,18 +229,22 @@ print_success "Reset completed"
 echo ""
 
 echo "Running task again to verify reproducibility..."
-TASK_RESPONSE_2=$(curl -s -X POST http://localhost:8000/task \
+TASK_RESPONSE_REPRO=$(curl -s -X POST http://localhost:8000/task \
   -H "Content-Type: application/json" \
   -d '{"task_id":"task_001"}')
 
 echo "Second execution response:"
-echo "$TASK_RESPONSE_2" | python -m json.tool
+echo "$TASK_RESPONSE_REPRO" | python3 -m json.tool
 echo ""
 
-if [[ "$TASK_RESPONSE_2" == *"success\": true"* ]]; then
+# Check success using Python for more reliable JSON parsing
+SUCCESS_REPRO=$(echo "$TASK_RESPONSE_REPRO" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data['success'])")
+
+if [[ "$SUCCESS_REPRO" == "True" ]]; then
     print_success "Reproducible execution confirmed!"
 else
     print_error "Reproducibility test failed"
+    print_info "Response: $TASK_RESPONSE_REPRO"
 fi
 echo ""
 

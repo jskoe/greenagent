@@ -6,7 +6,7 @@ import uvicorn
 from typing import Optional
 from pathlib import Path
 
-from .models import TaskRequest, Report, HealthResponse, ResetResponse
+from .models import TaskRequest, Report, HealthResponse, ResetResponse, RunRequest, RunResponse
 from .controller import get_controller, cleanup_controller
 
 
@@ -56,7 +56,9 @@ async def root():
         "endpoints": {
             "health": "/health",
             "reset": "/reset",
+            "run": "/run",
             "task": "/task",
+            "agent_card": "/.well-known/agent-card.json",
             "static": "/site/product.html",
             "dashboard": "/site/dashboard.html",
             "docs": "/docs"
@@ -73,7 +75,31 @@ async def root():
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint."""
-    return HealthResponse(ok=True)
+    return HealthResponse(ok=True, version="1.0.0")
+
+
+@app.get("/.well-known/agent-card.json")
+async def agent_card():
+    """Agent card endpoint for AgentBeats v2 compatibility."""
+    return {
+        "name": "Green Agent",
+        "version": "1.0.0",
+        "description": "Green Agent for Mind2Web evaluation with white agent orchestration",
+        "base_url": "/",
+        "endpoints": {
+            "health": "/health",
+            "reset": "/reset",
+            "run": "/run",
+            "task": "/task"
+        },
+        "capabilities": [
+            "Mind2Web evaluation",
+            "White agent orchestration",
+            "Deterministic judging",
+            "Trace production",
+            "Artifact generation"
+        ]
+    }
 
 
 @app.post("/reset", response_model=ResetResponse)
@@ -99,6 +125,19 @@ async def execute_task(task_request: TaskRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Task execution failed: {str(e)}")
+
+
+@app.post("/run", response_model=RunResponse)
+async def run_evaluation(run_request: RunRequest):
+    """Run an evaluation with white agent orchestration (AgentBeats v2 endpoint)."""
+    try:
+        controller = await get_controller()
+        response = await controller.run_evaluation(run_request)
+        return response
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Run evaluation failed: {str(e)}")
 
 
 @app.exception_handler(Exception)

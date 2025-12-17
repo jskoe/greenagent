@@ -1,0 +1,80 @@
+{
+  "task_001": {
+    "task_id": "task_001",
+    "benchmark": "mind2web",
+    "split": "train",
+    "index": 0,
+    "instruction": "Find the price of the third product and return it as plain text.",
+    "start_url": "http://localhost:8000/site/product.html",
+    "assets": {
+      "snapshot_path": null,
+      "har_path": null,
+      "trace_path": null
+    },
+    "gold_actions": [
+      {
+        "type": "click",
+        "selector": "#product-3 .price",
+        "step": 0
+      }
+    ],
+    "success_criteria": {
+      "selector_present": "#product-3 .price",
+      "text_present": "\\$\\d+\\.\\d{2}"
+    }
+  },
+  "task_002": {
+    "task_id": "task_002",
+    "benchmark": "mind2web",
+    "split": "train",
+    "index": 1,
+    "instruction": "Find the rating of the most expensive product and return the number of stars.",
+    "start_url": "http://localhost:8000/site/product.html",
+    "assets": {
+      "snapshot_path": null,
+      "har_path": null,
+      "trace_path": null
+    },
+    "gold_actions": [
+      {
+        "type": "click",
+        "selector": "#product-4 .stars",
+        "step": 0
+      }
+    ],
+    "success_criteria": {
+      "selector_present": "#product-4 .stars",
+      "text_present": "★{4}☆"
+    }
+  },
+  "task_003": {
+    "task_id": "task_003",
+    "benchmark": "mind2web",
+    "split": "train",
+    "index": 2,
+    "instruction": "Count the total number of products and return the count as a number.",
+    "start_url": "http://localhost:8000/site/product.html",
+    "assets": {
+      "snapshot_path": null,
+      "har_path": null,
+      "trace_path": null
+    },
+    "gold_actions": [
+      {
+        "type": "scroll",
+        "delta_y": 500,
+        "step": 0
+      },
+      {
+        "type": "click",
+        "selector": ".product",
+        "step": 1
+      }
+    ],
+    "success_criteria": {
+      "selector_present": ".product",
+      "text_present": "5"
+    }
+  }
+}
+
