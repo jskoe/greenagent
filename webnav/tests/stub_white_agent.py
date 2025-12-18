@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 import uvicorn
+import argparse
+import sys
 
 
 app = FastAPI(title="Stub White Agent")
@@ -99,5 +101,8 @@ async def health():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=9000)
+    parser = argparse.ArgumentParser(description="Stub White Agent Server")
+    parser.add_argument("--port", type=int, default=9000, help="Port to run the server on")
+    args = parser.parse_args()
+    uvicorn.run(app, host="0.0.0.0", port=args.port)
 

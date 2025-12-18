@@ -72,8 +72,13 @@ The service will be available at `http://localhost:8000`
 
 - `HOST`: Server host (default: `0.0.0.0`)
 - `AGENT_PORT`: Server port (default: `8080`)
+- `CLOUDRUN_HOST`: Public URL of your agent (e.g., `https://your-domain.ngrok-free.dev`) - **Required for AgentBeats deployment**
+- `PUBLIC_URL`: Alternative to `CLOUDRUN_HOST` for specifying public URL
+- `BASE_URL`: Alternative to `CLOUDRUN_HOST` for specifying public URL
 - `MIND2WEB_DATA_DIR`: Path to Mind2Web data directory (optional, falls back to local sample)
 - `WHITE_AGENT_ACT_PATH`: Path for white agent `/act` endpoint (default: `/act`)
+
+**Important for AgentBeats**: Set `CLOUDRUN_HOST` to your public URL (ngrok domain, Cloudflare Tunnel domain, etc.) so the agent card returns accessible URLs.
 
 ## API Endpoints
 
@@ -234,10 +239,20 @@ make test_run   # Run test evaluation with stub white agent
    # Or: cd webnav && uvicorn app.main:app --host 0.0.0.0 --port 8000
    ```
 
-2. Start stub white agent (in another terminal):
+2. Start white agent (in another terminal):
+   
+   **Option A: Stub white agent (for testing):**
    ```bash
    cd webnav && python -m tests.stub_white_agent
    ```
+   
+   **Option B: LLM-powered white agent (for production):**
+   ```bash
+   export OPENAI_API_KEY=your_key_here  # or ANTHROPIC_API_KEY
+   ./start-white-agent.sh
+   ```
+   
+   See [WHITE_AGENT.md](WHITE_AGENT.md) for full documentation.
 
 3. Test `/run` endpoint:
    ```bash
@@ -293,7 +308,9 @@ greenagent/
     │   ├── tasks.json        # Legacy task specifications
     │   └── mind2web_sample.json # Mind2Web sample tasks
     ├── tests/
-    │   └── stub_white_agent.py # Stub white agent for testing
+    │   ├── stub_white_agent.py # Stub white agent for testing
+    │   ├── llm_white_agent.py # LLM-powered white agent
+    │   └── white_agent_server.py # Standalone white agent server
     ├── sites/
     │   └── product.html      # Static demo page
     └── requirements.txt       # Python dependencies
@@ -380,6 +397,13 @@ Follow the [AgentBeats integration guide](https://docs.agentbeats.org/Blogs/blog
 For more deployment options (Cloudflare Tunnel, etc.), see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## White Agent Protocol
+
+The green agent can work with any white agent that implements the protocol below. Two white agent implementations are included:
+
+1. **Stub White Agent** (`webnav/tests/stub_white_agent.py`) - Simple rule-based agent for testing
+2. **LLM White Agent** (`webnav/app/white_agent_server.py`) - Production-ready LLM-powered agent
+
+See [WHITE_AGENT.md](WHITE_AGENT.md) for details on using the LLM white agent.
 
 White agents must implement a `POST /act` endpoint (configurable via `WHITE_AGENT_ACT_PATH`) that accepts:
 
